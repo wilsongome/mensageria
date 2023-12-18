@@ -1,7 +1,6 @@
 <?php
 namespace app;
 
-use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class Subscriber{
