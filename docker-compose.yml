@@ -1,0 +1,23 @@
+version: '3.6'
+services:
+  app-mensageria:
+    image: php:8.2-apache
+    container_name: app-mensageria
+    extra_hosts: 
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8000:80"
+    networks:
+    - dev-network
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    container_name: rabbitmq
+    ports: 
+      - "8001:15672"
+    networks:
+      - dev-network
+networks:
+  dev-network:
+    driver: bridge
