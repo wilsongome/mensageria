@@ -3,6 +3,7 @@ namespace app;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Wire\AMQPTable;
 
 class QueueManager{
 
@@ -12,7 +13,9 @@ class QueueManager{
     private $pass = "guest";
     private $connection;
     private $channel;
-    private $channelName;
+    private $queueName;
+    private $exchangeName;
+    private $exchangeType;
 
     public function __construct()
     {
@@ -29,11 +32,26 @@ class QueueManager{
         return $this->connection;
     }
 
-    public function setChannel(string $channelName)
+    public function setQueue(string $queueName, ?AMQPTable $arguments)
     {
         $this->channel = $this->connection->channel();
-        $this->channel->queue_declare($channelName, false, false, false, false);
-        $this->channelName = $channelName;
+        $this->channel->queue_declare($queueName, false, false, false, false, false, $arguments);
+    
+        $this->queueName = $queueName;
+    }
+
+    public function setExchange(string $exchangeName, string $type = 'direct')
+    {
+        $this->channel = $this->connection->channel();
+        $this->channel->exchange_declare($exchangeName, $type, false, false, false);
+        $this->exchangeName = $exchangeName;
+    }
+
+    public function bind(string $queueName, string $exchangeName, ?string $routingKey)
+    {
+        $this->channel = $this->connection->channel();
+        $this->channel->queue_bind($queueName, $exchangeName, $routingKey);
+        $this->exchangeName = $exchangeName;
     }
 
     public function getChannel(): AMQPChannel
@@ -41,9 +59,19 @@ class QueueManager{
         return $this->channel;
     }
 
-    public function getChannelName()
+    public function getQueueName()
     {
-        return $this->channelName;
+        return $this->queueName;
+    }
+
+    public function getExchangeName()
+    {
+        return $this->exchangeName;
+    }
+
+    public function getExchangeType()
+    {
+        return $this->exchangeType;
     }
 
 

@@ -5,13 +5,18 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 class Publisher{
 
-    public function send(string $messageText, QueueManager $queueManager)
+    public function send(QueueManager $queueManager, string $messageText)
     {
 
         $message = new AMQPMessage($messageText);
-        $queueManager->getChannel()->basic_publish($message, '', $queueManager->getChannelName());
+        $queueManager->getChannel()->basic_publish
+        (
+            $message,
+            $queueManager->getExchangeName(),
+            $queueManager->getQueueName()
+        );
         
-        echo " [x] Sent '$messageText'\n";
+        echo " [x] Sent  '$messageText'\n";
 
     }
 
